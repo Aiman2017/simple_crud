@@ -1,7 +1,19 @@
 
 <?php
     require_once 'db.php';
-    $products = query();
+    $con = connect();
+    $search = $_GET['search'] ?? '';
+    if ($search) {
+        $find = $con->prepare('SELECT * FROM product WHERE title like :title or price like :price');
+        $find->bindValue(':title', "%$search%");
+        $find->bindValue(':price', "%$search%");
+        $find->execute();
+        $products = $find->fetchAll(PDO::FETCH_ASSOC);
+
+    }else {
+        $products = query();
+    }
+
 
 ?>
 <!doctype html>
@@ -29,6 +41,12 @@
 <h1>Products</h1>
 <a href="create.php" class="btn btn-success">Success</a>
 
+<form>
+    <div class="input-group">
+        <input type="text" class="form-control rounded" placeholder="Search for products" name="search"/>
+        <button type="submit" class="btn btn-outline-primary">search</button>
+    </div>
+</form>
 <table class="table">
     <thead>
     <tr>
@@ -37,6 +55,7 @@
         <th scope="col">title</th>
         <th scope="col">description</th>
         <th scope="col">price</th>
+        <th scope="col">create date</th>
         <th scope="col">action</th>
     </tr>
     </thead>
@@ -51,6 +70,7 @@
             <td><?= $product['title']?></td>
             <td><?= $product['description']?></td>
             <td><?= $product['price']?></td>
+            <td><?= $product['create_date']?></td>
             <td>
                 <a href="update.php?id=<?= $product['id']?>" type="button" class="btn btn-sm btn-outline-primary">Edit</a>
 <!--                //first способ by using links-->
