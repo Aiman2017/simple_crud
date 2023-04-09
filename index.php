@@ -39,11 +39,18 @@
 </head>
 <body>
 <h1>Products</h1>
-<a href="create.php" class="btn btn-success">Success</a>
 
+<?php if ($search):?>
+    <p>
+        <a href="index.php" class="btn btn-secondary"> Go Back to Product</a>
+    </p>
+    <?php else :?>
+    <a href="create.php" class="btn btn-success">Success</a>
+
+<?php endif;?>
 <form>
     <div class="input-group">
-        <input type="text" class="form-control rounded" placeholder="Search for products" name="search"/>
+        <input type="text" class="form-control rounded" placeholder="Search for products" name="search" value="<?= $search ?? ''?>"/>
         <button type="submit" class="btn btn-outline-primary">search</button>
     </div>
 </form>
