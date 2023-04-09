@@ -86,6 +86,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <p>
     <a href="index.php" class="btn btn-secondary"> Go Back to Product</a>
 </p>
+<p class="text-justify h4">
+    update the title<span class="h3"><?= $products['title']?></span>
+</p>
+
 <form action="" method="post" enctype="multipart/form-data">
     <?php if ($products['image']) :?>
         <img src="<?= $products['image']?>" alt="">
