@@ -15,8 +15,6 @@ $products = $statement->fetch(PDO::FETCH_ASSOC);
 
 
 $errors = [];
-$products_img = explode(',', $products['image']);
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $description = $_POST['description'];
@@ -32,20 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($image['size'] > 125000) {
         $errors['error'] = 'The file is too large';
     }
+
     if (in_array($imgEx, $imgExtension)) {
         $imagePath = 'images/' . 'IMG-' . $image['name'];
-
         if ($image) {
-            if ($products['image']) {
-                unlink($products['image']);
-            }
-
             move_uploaded_file($image['tmp_name'], $imagePath);
         }
-    }else {
+    }else{
+        if (empty($_FILES['image']['name'])) {
+            redirect('index');
+        }
         $errors['error'] = 'The file can\'\t be accept';
     }
-
 
     if (empty($errors)) {
 
@@ -61,7 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $check = $statement->execute();
         if ($check !== false) {
-            header('Location:index.php?imagePath='.$imagePath);
+           redirect('index');
+           die();
 
         }
     }
