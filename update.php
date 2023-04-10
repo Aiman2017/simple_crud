@@ -15,26 +15,34 @@ $statement->execute();
 
 
 $products = $statement->fetch(PDO::FETCH_ASSOC);
-
+extract($products);
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $description = $_POST['description'];
     $price = $_POST['price'];
     $image = $_FILES['image'] ?? null;
+    $date = date('Y-m-d H:s:i');
     $imagePath = $products['image'];
-
 
     if (!is_dir('images')) {
         mkdir('images');
     }
-    if ($image['size'] > 125000) {
+    if ($image['size'] > 1250000) {
         $errors[] = 'The file is too large';
     }
     $imgEx = pathinfo($image['name'], PATHINFO_EXTENSION);
     $imgExtension = ['jpg', 'png', 'jpeg'];
     if (!in_array($imgEx, $imgExtension) && !empty($image['name'])) {
         $errors[] = 'The file can\'\t be accept';
+    }
+
+    if ($image && $image['tmp_name']) {
+        $nameFolderImage = (string) substr("IMG-${image['name']}", 0, -4);
+        $imagePath = 'images/' . randomString(6).($nameFolderImage) .'/' . $image['name'];
+        mkdir(dirname($imagePath));
+        move_uploaded_file($image['tmp_name'], $imagePath);
+
     }
     if (empty($errors)) {
         $statement = $con->prepare("UPDATE product SET title = :title, 
@@ -46,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $statement->bindValue(':description', $description);
         $statement->bindValue(':price', $price);
         $statement->bindValue(':id', $id);
-//        $statement->execute();
-        show($statement->execute());
+        $statement->execute();
+
         redirect('index');
         exit();
     }
@@ -69,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Document</title>
 </head>
 <body>
+<p>
+    <a href="index.php" class="btn btn-secondary"> Go Back to Product</a>
+</p>
 <form action="" method="post" enctype="multipart/form-data">
 
     <div class="form-group">
